@@ -1,0 +1,12 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+watchPatterns = ["src/**", "migrations/**", "pyproject.toml", "Dockerfile"]
+
+[deploy]
+startCommand = "gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 2 --threads 4 --timeout 90 carmen_agent.hosted.app:application"
+preDeployCommand = "carmen-hosted migrate"
+healthcheckPath = "/healthz"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5

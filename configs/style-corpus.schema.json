@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carmen authored writing style corpus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["messages", "detail"],
+  "properties": {
+    "messages": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "channel_type", "timestamp", "text"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1, "maxLength": 512},
+          "channel_type": {"enum": ["dm", "group_dm", "channel", "email"]},
+          "timestamp": {"type": "string", "maxLength": 128},
+          "text": {"type": "string", "minLength": 1, "maxLength": 4000}
+        }
+      }
+    },
+    "detail": {"type": "string", "maxLength": 1000}
+  }
+}

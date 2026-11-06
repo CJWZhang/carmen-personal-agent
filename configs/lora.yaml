@@ -1,0 +1,36 @@
+model: mlx-community/Qwen3-4B-Instruct-2507-4bit
+train: true
+fine_tune_type: lora
+data: data/processed
+seed: 42
+
+# Conservative defaults for Apple Silicon. Increase these only after a short
+# run confirms the machine has enough unified memory.
+num_layers: 16
+batch_size: 1
+grad_accumulation_steps: 4
+max_seq_length: 512
+grad_checkpoint: true
+
+iters: 600
+learning_rate: 1e-5
+steps_per_report: 10
+steps_per_eval: 50
+val_batches: 25
+save_every: 100
+adapter_path: adapters/carmen-qwen3-4b
+test: true
+test_batches: -1
+
+# Learn Carmen's answer tokens, not the synthetic prompt.
+mask_prompt: true
+
+lora_parameters:
+  keys:
+    - self_attn.q_proj
+    - self_attn.k_proj
+    - self_attn.v_proj
+    - self_attn.o_proj
+  rank: 8
+  scale: 16.0
+  dropout: 0.05

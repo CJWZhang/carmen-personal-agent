@@ -1,0 +1,104 @@
+[
+  {
+    "id": "direct-review-ask",
+    "provenance": "synthetic privacy-safe seed",
+    "event": {
+      "source": "slack",
+      "tenant_id": "eval",
+      "target_user_id": "U1",
+      "source_id": "1.0",
+      "actor_id": "U2",
+      "text": "<@U1> can you review the launch PR today?",
+      "channel_id": "C1",
+      "thread_id": "1.0",
+      "direct": false
+    },
+    "model_output": "{\"is_actionable\":true,\"action_type\":\"review\",\"assigned_to_user\":true,\"explicit_ask\":true,\"summary\":\"Review the launch PR\",\"requester_id\":\"U2\",\"deadline_text\":\"today\",\"due_at\":\"\",\"confidence\":0.96,\"rationale\":\"Direct mention and ask\"}",
+    "expected": {"is_actionable": true, "action_type": "review"}
+  },
+  {
+    "id": "ambient-channel-question",
+    "provenance": "synthetic privacy-safe seed",
+    "event": {
+      "source": "slack",
+      "tenant_id": "eval",
+      "target_user_id": "U1",
+      "source_id": "2.0",
+      "actor_id": "U2",
+      "text": "can someone review the launch PR?",
+      "channel_id": "C1",
+      "thread_id": "2.0",
+      "direct": false
+    },
+    "model_output": "{\"is_actionable\":true,\"action_type\":\"review\",\"assigned_to_user\":true,\"explicit_ask\":true,\"summary\":\"Review the launch PR\",\"confidence\":0.92}",
+    "expected": {"is_actionable": false, "action_type": "review"}
+  },
+  {
+    "id": "dm-reply-ask",
+    "provenance": "synthetic privacy-safe seed",
+    "event": {
+      "source": "slack",
+      "tenant_id": "eval",
+      "target_user_id": "U1",
+      "source_id": "3.0",
+      "actor_id": "U2",
+      "text": "could you reply with the final number?",
+      "channel_id": "D1",
+      "thread_id": "3.0",
+      "direct": true
+    },
+    "model_output": "{\"is_actionable\":true,\"action_type\":\"reply\",\"assigned_to_user\":true,\"explicit_ask\":true,\"summary\":\"Reply with the final number\",\"requester_id\":\"U2\",\"confidence\":0.94}",
+    "expected": {"is_actionable": true, "action_type": "reply"}
+  },
+  {
+    "id": "explicit-self-commitment",
+    "provenance": "synthetic privacy-safe seed",
+    "event": {
+      "source": "slack",
+      "tenant_id": "eval",
+      "target_user_id": "U1",
+      "source_id": "4.0",
+      "actor_id": "U1",
+      "text": "I'll send the revised launch notes tomorrow",
+      "channel_id": "C1",
+      "thread_id": "4.0",
+      "direct": false
+    },
+    "model_output": "{\"is_actionable\":true,\"action_type\":\"deliverable\",\"assigned_to_user\":true,\"explicit_ask\":false,\"summary\":\"Send the revised launch notes\",\"confidence\":0.91}",
+    "expected": {"is_actionable": true, "action_type": "deliverable"}
+  },
+  {
+    "id": "self-authored-fyi",
+    "provenance": "synthetic privacy-safe seed",
+    "event": {
+      "source": "slack",
+      "tenant_id": "eval",
+      "target_user_id": "U1",
+      "source_id": "5.0",
+      "actor_id": "U1",
+      "text": "the dashboard is looking much better",
+      "channel_id": "C1",
+      "thread_id": "5.0",
+      "direct": false
+    },
+    "model_output": "{\"is_actionable\":true,\"action_type\":\"follow_up\",\"assigned_to_user\":true,\"explicit_ask\":false,\"summary\":\"Follow up on the dashboard\",\"confidence\":0.8}",
+    "expected": {"is_actionable": false, "action_type": "follow_up"}
+  },
+  {
+    "id": "direct-decision-ask",
+    "provenance": "synthetic privacy-safe seed",
+    "event": {
+      "source": "slack",
+      "tenant_id": "eval",
+      "target_user_id": "U1",
+      "source_id": "6.0",
+      "actor_id": "U3",
+      "text": "<@U1> can you decide which option we should ship?",
+      "channel_id": "C2",
+      "thread_id": "6.0",
+      "direct": false
+    },
+    "model_output": "{\"is_actionable\":true,\"action_type\":\"decision\",\"assigned_to_user\":true,\"explicit_ask\":true,\"summary\":\"Choose which option to ship\",\"requester_id\":\"U3\",\"confidence\":0.95}",
+    "expected": {"is_actionable": true, "action_type": "decision"}
+  }
+]

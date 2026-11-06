@@ -1,0 +1,96 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "carmen-personal-agent"
+version = "0.1.0"
+description = "A privacy-conscious, cross-platform personal work and writing assistant."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+keywords = ["personal-assistant", "local-first", "mlx", "ollama", "slack"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Office/Business",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+mlx = [
+  "mlx-lm[train]==0.31.3; sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
+hosted = [
+  "cryptography>=45.0",
+  "gunicorn>=23.0",
+  "psycopg[binary]>=3.2",
+]
+
+[project.scripts]
+carmen = "carmen_agent.assistant:main"
+carmen-ui = "carmen_agent.ui.app:main"
+carmen-prepare = "carmen_agent.prepare:main"
+carmen-chat = "carmen_agent.chat:main"
+carmen-triage = "carmen_agent.skills.cli:main"
+carmen-daily = "carmen_agent.skills.cli:main"
+carmen-schedule = "carmen_agent.skills.schedule:main"
+carmen-do = "carmen_agent.commands:main"
+carmen-collect = "carmen_agent.collector:main"
+carmen-remind = "carmen_agent.reminders:main"
+carmen-hosted = "carmen_agent.hosted.cli:main"
+carmen-eval = "carmen_agent.evals.runner:main"
+carmen-scheduler = "carmen_agent.scheduler:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/carmen_agent"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"migrations" = "carmen_agent/resources/migrations"
+"configs/collector-output.schema.json" = "carmen_agent/resources/collector-output.schema.json"
+"configs/source-observation.schema.json" = "carmen_agent/resources/source-observation.schema.json"
+"configs/style-corpus.schema.json" = "carmen_agent/resources/style-corpus.schema.json"
+"configs/lora.yaml" = "carmen_agent/resources/lora.yaml"
+"LICENSE" = "carmen_agent/resources/LICENSE"
+"NOTICE" = "carmen_agent/resources/NOTICE"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/.dockerignore",
+  "/.env.example",
+  "/.github",
+  "/.gitignore",
+  "/CHANGELOG.md",
+  "/CONTRIBUTING.md",
+  "/Dockerfile",
+  "/handoff.md",
+  "/LICENSE",
+  "/NOTICE",
+  "/README.md",
+  "/SECURITY.md",
+  "/configs",
+  "/data/inbox/README.md",
+  "/deploy",
+  "/docs",
+  "/evals/cases",
+  "/migrations",
+  "/pyproject.toml",
+  "/railway.toml",
+  "/run-chat.sh",
+  "/run-train.sh",
+  "/scripts",
+  "/src",
+  "/tests",
+  "/uv.lock",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

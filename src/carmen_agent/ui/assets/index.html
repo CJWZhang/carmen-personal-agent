@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fbfbf9">
+    <meta name="carmen-session" content="__CARMEN_SESSION_TOKEN__">
+    <title>Carmen Assistant</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="stylesheet" href="/assets/app.css">
+    <script src="/assets/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand-row">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <div class="brand-name">Carmen</div>
+            <div class="brand-subtitle">Personal assistant</div>
+          </div>
+        </div>
+
+        <nav class="primary-nav" aria-label="Work views">
+          <button class="nav-item active" data-filter="today">
+            <span class="nav-icon">⌂</span><span>Today</span><span class="nav-count" id="count-today">0</span>
+          </button>
+          <button class="nav-item" data-filter="messages">
+            <span class="nav-icon">↗</span><span>Messages</span><span class="nav-count" id="count-messages">0</span>
+          </button>
+          <button class="nav-item" data-filter="meetings">
+            <span class="nav-icon">□</span><span>Meetings</span><span class="nav-count" id="count-meetings">0</span>
+          </button>
+          <button class="nav-item" data-filter="waiting">
+            <span class="nav-icon">◷</span><span>Waiting</span><span class="nav-count" id="count-waiting">0</span>
+          </button>
+          <button class="nav-item" data-filter="review">
+            <span class="nav-icon">◇</span><span>Review</span><span class="nav-count" id="count-review">0</span>
+          </button>
+          <button class="nav-item" data-filter="completed">
+            <span class="nav-icon">✓</span><span>Completed</span><span class="nav-count" id="count-completed">0</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+        <div class="privacy-card">
+          <span class="privacy-dot"></span>
+          <div>
+            <strong>Local task database</strong>
+            <span>Connected services receive only the requests needed to refresh them.</span>
+          </div>
+        </div>
+        <div class="provider-row">
+          <span>Model</span><strong id="provider-label">Checking…</strong>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <button class="icon-button mobile-menu" id="mobile-menu" aria-label="Open navigation">☰</button>
+          <div class="date-lockup">
+            <span class="eyebrow">Your workspace</span>
+            <strong id="current-date">Loading today…</strong>
+          </div>
+          <div class="topbar-actions">
+            <button class="icon-button header-search-button" id="quick-actions-button" aria-haspopup="dialog" aria-label="Search tasks and commands" title="Search tasks and commands">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="6.5"></circle>
+                <path d="m16 16 4 4"></path>
+              </svg>
+            </button>
+            <button class="button secondary" id="settings-button"><span>⚙</span> Settings</button>
+            <button class="button secondary" id="reload-button"><span>↻</span> Sync work</button>
+            <button class="button primary" id="new-task-button"><span>＋</span> New task</button>
+          </div>
+        </header>
+
+        <section class="source-health-strip" id="source-health-strip" aria-label="Connected source status">
+          <span class="source-health-dot" aria-hidden="true"></span>
+          <div class="source-health-copy">
+            <strong id="source-health-summary">Checking connected sources…</strong>
+            <span id="freshness">Checking your latest brief</span>
+          </div>
+          <button class="text-button" id="source-health-details" type="button">View sources</button>
+          <button class="text-button" id="source-strip-refresh" type="button">Refresh sources</button>
+        </section>
+
+        <section class="source-warning hidden" id="source-warning" role="status">
+          <div class="source-warning-mark" aria-hidden="true">!</div>
+          <div>
+            <strong id="source-warning-title">Work sources need a refresh</strong>
+            <p id="source-warning-message">Checking Slack, Gmail, Calendar, and GitHub status…</p>
+          </div>
+          <div class="source-warning-actions">
+            <button class="button secondary hidden" id="source-seed-button" type="button">Import saved tasks</button>
+            <button class="button source-refresh-button" id="source-refresh-button" type="button">Refresh now</button>
+          </div>
+        </section>
+
+        <section class="personalization-banner hidden" id="personalization-banner" role="status">
+          <div class="personalization-banner-mark" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="personalization-banner-copy">
+            <strong>Make this agent sound like you</strong>
+            <p>Privately learn your writing style from messages you authored. Your local agent stays under your control.</p>
+          </div>
+          <button class="button primary" id="open-personalization-button" type="button">Personalize</button>
+        </section>
+
+        <section class="welcome-row">
+          <div>
+            <p class="eyebrow accent">Daily command center</p>
+            <h1 id="greeting">Good morning</h1>
+            <p class="welcome-copy" id="daily-summary">Gathering your open loops…</p>
+          </div>
+          <span class="source-freshness hidden" id="source-freshness">Checking connected sources…</span>
+        </section>
+
+        <section class="metric-grid" aria-label="Today at a glance">
+          <button class="metric-card coral" type="button" data-filter="today">
+            <span class="metric-label">Do now</span>
+            <strong id="metric-focus">0</strong>
+            <span class="metric-note">priorities</span>
+          </button>
+          <button class="metric-card sage" type="button" data-filter="messages">
+            <span class="metric-label">Need a response</span>
+            <strong id="metric-replies">0</strong>
+            <span class="metric-note">messages to close</span>
+          </button>
+          <button class="metric-card sky" type="button" data-filter="meetings">
+            <span class="metric-label">Meetings</span>
+            <strong id="metric-meetings">0</strong>
+            <span class="metric-note">prep needed</span>
+          </button>
+        </section>
+
+        <section class="workspace-grid">
+          <div class="task-column panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow" id="view-eyebrow">Today</span>
+                <h2 id="view-title">What to do next</h2>
+              </div>
+              <span class="item-total" id="item-total">0 items</span>
+            </div>
+            <div class="task-list" id="task-list" aria-live="polite">
+              <div class="loading-card"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+
+          <aside class="detail-column panel" id="detail-panel">
+            <div class="empty-detail" id="empty-detail">
+              <div class="empty-orbit"><span></span></div>
+              <h2>Choose one open loop</h2>
+              <p>Select a task to see its source, context, draft, and next actions.</p>
+            </div>
+            <div class="task-detail hidden" id="task-detail">
+              <div class="detail-topline">
+                <span class="source-pill" id="detail-source">Source</span>
+                <button class="icon-button" id="close-detail" aria-label="Close task details">×</button>
+              </div>
+              <h2 id="detail-title"></h2>
+              <p class="detail-why" id="detail-why"></p>
+              <div class="detail-meta" id="detail-meta"></div>
+
+              <section class="primary-action-card" id="primary-action-card">
+                <div>
+                  <span class="section-label">Next step</span>
+                  <strong id="primary-action-title">Move this forward</strong>
+                  <p id="primary-action-copy"></p>
+                </div>
+                <button class="button primary" id="primary-action-button">Start</button>
+              </section>
+
+              <section class="evidence-block">
+                <div class="section-label">Why now</div>
+                <p id="detail-recommendation"></p>
+                <div class="evidence-status" id="detail-evidence-status"></div>
+              </section>
+
+              <section class="review-actions hidden" id="review-actions" aria-label="Review suggestion">
+                <div>
+                  <strong>Should this be in your plan?</strong>
+                  <span>Your correction helps Carmen make better suggestions next time.</span>
+                </div>
+                <div class="review-button-row">
+                  <button class="button primary" id="accept-button">Add to my plan</button>
+                  <button class="button secondary" id="not-task-button">Not a task</button>
+                  <button class="button secondary" id="not-mine-button">Not mine</button>
+                  <button class="button secondary" id="handled-button">Already handled</button>
+                </div>
+              </section>
+
+              <div class="detail-actions">
+                <button class="button secondary" id="complete-button">✓ Mark done</button>
+                <details class="more-actions" id="more-actions">
+                  <summary>More</summary>
+                  <div class="more-actions-menu">
+                    <button class="text-button" id="start-button">Start working</button>
+                    <button class="text-button" id="waiting-button">Mark waiting</button>
+                    <button class="text-button" id="edit-button">Edit task</button>
+                    <button class="text-button" id="snooze-button">Remind me later</button>
+                    <button class="text-button" id="verify-context-button">Refresh this context</button>
+                    <button class="text-button" id="usually-skip-button">Usually skip meetings like this</button>
+                    <button class="text-button" id="usually-attend-button">Usually attend meetings like this</button>
+                    <button class="text-button hidden" id="fix-date-button">Fix due date</button>
+                    <button class="text-button" id="source-button">Open original source ↗</button>
+                  </div>
+                </details>
+              </div>
+
+              <section class="connector-action-panel hidden" id="connector-action-panel">
+                <div>
+                  <strong>Complete in source</strong>
+                  <span>Carmen runs only the selected action, then waits for source verification.</span>
+                </div>
+                <select id="connector-action-select" aria-label="Connector action"></select>
+                <button class="button primary" id="execute-button">Review action</button>
+              </section>
+
+              <section class="context-block" id="context-block">
+                <div class="section-label">Context</div>
+                <div class="context-sender" id="context-sender"></div>
+                <p id="context-body"></p>
+              </section>
+
+              <section class="draft-block" id="draft-block">
+                <div class="section-heading-row">
+                  <div class="section-label">Suggested response</div>
+                  <button class="text-button" id="draft-button">Ask for a draft</button>
+                </div>
+                <div class="draft-copy" id="draft-copy">No draft yet. Carmen can create one from this task's context.</div>
+                <button class="copy-button hidden" id="copy-draft-button">Copy response</button>
+              </section>
+
+              <section class="task-assist-block" id="task-assist-block">
+                <div class="task-assist-actions">
+                  <button type="button" data-task-prompt="Help me move this task forward using the available context.">Ask Carmen about this task</button>
+                </div>
+              </section>
+            </div>
+          </aside>
+          <button class="detail-backdrop hidden" id="detail-backdrop" aria-label="Close task details"></button>
+        </section>
+
+      </main>
+
+      <aside class="chat-drawer" id="assistant-drawer" aria-label="Ask Carmen" aria-hidden="true">
+        <header class="chat-drawer-header">
+          <div class="assistant-avatar" aria-hidden="true"><span></span></div>
+          <div class="chat-drawer-title">
+            <h2>Ask Carmen</h2>
+            <span id="chat-model-label">Private · loading local model details…</span>
+          </div>
+          <button class="icon-button chat-close" id="chat-close" aria-label="Close Carmen chat">×</button>
+        </header>
+
+        <div class="chat-drawer-body">
+          <div class="chat-intro">
+            <span class="eyebrow accent">Your copilot</span>
+            <h3>How can I help?</h3>
+            <p id="assistant-context">Ask about your day, or select a task for contextual help.</p>
+            <div class="chat-provenance" id="chat-provenance">Context: workspace task list</div>
+          </div>
+          <div class="chat-thread" id="chat-thread" aria-live="polite"></div>
+          <div class="prompt-chips">
+            <button data-prompt="What should I focus on first today?">What should I focus on?</button>
+            <button data-prompt="Summarize what I am blocked on.">What am I blocked on?</button>
+            <button data-prompt="Help me plan the next two hours.">Plan my next two hours</button>
+          </div>
+        </div>
+
+        <form class="assistant-composer" id="assistant-form">
+          <textarea id="assistant-input" rows="1" maxlength="4000" placeholder="Ask about your work…"></textarea>
+          <button class="send-button" type="submit" aria-label="Send message">↑</button>
+        </form>
+      </aside>
+    </div>
+
+    <button class="chat-launcher" id="chat-launcher" aria-label="Open Carmen chat" aria-controls="assistant-drawer" aria-expanded="false">
+      <span class="chat-launcher-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="chat-launcher-label">Ask Carmen</span>
+    </button>
+
+    <dialog class="quick-actions-dialog" id="quick-actions-dialog">
+      <div class="quick-actions-shell">
+        <div class="quick-search-row">
+          <span aria-hidden="true">⌘</span>
+          <input id="quick-action-input" type="search" maxlength="120" placeholder="Search tasks or choose an action" aria-label="Search tasks or actions">
+          <button class="icon-button" id="quick-actions-close" type="button" aria-label="Close quick actions">×</button>
+        </div>
+        <div class="quick-action-list" id="quick-action-list">
+          <button type="button" data-quick-action="today"><span>Today</span><small>Go to your daily plan</small></button>
+          <button type="button" data-quick-action="new"><span>Add task</span><small>Capture a new open loop</small></button>
+          <button type="button" data-quick-action="refresh"><span>Refresh sources</span><small>Pull Slack, Gmail, Calendar, and GitHub</small></button>
+          <button type="button" data-quick-action="review"><span>Review suggestions</span><small>Confirm uncertain imports</small></button>
+          <button type="button" data-quick-action="chat"><span>Ask Carmen</span><small>Plan, summarize, or draft</small></button>
+          <button type="button" data-quick-action="settings"><span>Settings</span><small>Connections, automation, and model</small></button>
+        </div>
+        <div class="quick-task-results" id="quick-task-results"></div>
+        <p class="quick-hint">Press ⌘K anytime to open this menu.</p>
+      </div>
+    </dialog>
+
+    <dialog id="new-task-dialog">
+      <form id="new-task-form" method="dialog">
+        <div class="dialog-heading">
+          <div>
+            <span class="eyebrow accent">Capture an open loop</span>
+            <h2>New task</h2>
+          </div>
+          <button class="icon-button dialog-close" type="button" aria-label="Close">×</button>
+        </div>
+        <label>What needs to happen?
+          <input name="title" maxlength="120" required autofocus placeholder="Prepare launch notes">
+        </label>
+        <div class="form-grid">
+          <label>Priority
+            <select name="urgency">
+              <option value="today">Today</option>
+              <option value="now">Now</option>
+              <option value="this_week" selected>This week</option>
+              <option value="fyi">Low priority</option>
+            </select>
+          </label>
+          <label>Due date
+            <input name="due" type="date" min="2000-01-01" max="2100-12-31">
+          </label>
+        </div>
+        <label>Remind me at
+          <input name="remind_at" type="datetime-local">
+        </label>
+        <div class="dialog-actions">
+          <button class="button secondary dialog-close" type="button">Cancel</button>
+          <button class="button primary" type="submit">Add task</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="edit-task-dialog">
+      <form id="edit-task-form" method="dialog">
+        <div class="dialog-heading">
+          <div>
+            <span class="eyebrow accent">Personal override</span>
+            <h2>Edit task</h2>
+          </div>
+          <button class="icon-button dialog-close" type="button" aria-label="Close">×</button>
+        </div>
+        <p class="dialog-note">Your edits remain attached to this task when its connected source refreshes. Original source context is kept unchanged.</p>
+        <label>Task title
+          <input name="title" maxlength="120" required placeholder="Prepare launch notes">
+        </label>
+        <label>Notes
+          <textarea name="why" rows="4" maxlength="500" placeholder="Why this matters or what needs to happen"></textarea>
+        </label>
+        <div class="form-grid">
+          <label>Priority
+            <select name="urgency">
+              <option value="now">Now</option>
+              <option value="today">Today</option>
+              <option value="this_week">This week</option>
+              <option value="fyi">Low priority</option>
+            </select>
+          </label>
+          <label>Due date
+            <input name="due" type="date" min="2000-01-01" max="2100-12-31">
+          </label>
+        </div>
+        <label>Remind me at
+          <input name="remind_at" type="datetime-local">
+        </label>
+        <div class="dialog-actions">
+          <button class="button secondary dialog-close" type="button">Cancel</button>
+          <button class="button primary" type="submit">Save changes</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="settings-dialog" id="settings-dialog">
+      <form id="settings-form" method="dialog">
+        <div class="dialog-heading">
+          <div>
+            <span class="eyebrow accent">Control center</span>
+            <h2>Settings & automation</h2>
+          </div>
+          <button class="icon-button dialog-close" type="button" aria-label="Close">×</button>
+        </div>
+
+        <section class="settings-section">
+          <div class="settings-section-heading">
+            <div><strong>Your assistant</strong><span>Personalize how Carmen addresses you.</span></div>
+          </div>
+          <label>Your name
+            <input name="user_name" maxlength="120" required>
+          </label>
+          <button class="button primary settings-save" type="submit">Save settings</button>
+        </section>
+
+        <section class="settings-section personalization-section" id="personalization-section">
+          <div class="settings-section-heading">
+            <div>
+              <strong>Your voice</strong>
+              <span>Teach this agent how you write without changing how it reasons.</span>
+            </div>
+            <span class="personalization-status" id="personalization-status">Not personalized</span>
+          </div>
+          <div class="personalization-steps" aria-label="Personalization progress">
+            <div class="personalization-step" id="personalization-step-writing">
+              <span>1</span><div><strong>Your writing</strong><small id="personalization-writing-copy">Waiting to import authored emails or messages</small></div>
+            </div>
+            <div class="personalization-step" id="personalization-step-profile">
+              <span>2</span><div><strong>Voice profile</strong><small>Sanitized tone, phrasing, casing, and approved emoji</small></div>
+            </div>
+            <div class="personalization-step" id="personalization-step-training">
+              <span>3</span><div><strong>Local fine-tune</strong><small id="personalization-training-copy">Optional on Apple Silicon</small></div>
+            </div>
+          </div>
+          <p class="personalization-next" id="personalization-next">Connect Gmail or Slack to begin.</p>
+          <div class="settings-actions">
+            <button class="button primary" id="personalize-button" type="button">Personalize my agent</button>
+            <button class="button secondary hidden" id="refresh-voice-button" type="button">Update from recent writing</button>
+            <button class="button secondary hidden" id="fine-tune-button" type="button">Fine-tune locally</button>
+          </div>
+          <p class="dialog-note personalization-privacy" id="personalization-privacy">Only emails or messages authored by you are imported. Quoted history, secrets, and identifiers are filtered before the style profile or training set is created.</p>
+        </section>
+
+        <section class="settings-section">
+          <div class="settings-section-heading">
+            <div><strong>Connections</strong><span>Each source is validated separately; failed reads keep their last good snapshot.</span></div>
+            <button class="button secondary" id="settings-refresh-button" type="button">Refresh all</button>
+          </div>
+          <div class="connector-list" id="connector-list"><span>Loading connector status…</span></div>
+          <p class="dialog-note" id="connector-guidance">Carmen keeps the last successful snapshot when a connection cannot refresh.</p>
+        </section>
+
+        <section class="settings-section">
+          <div class="settings-section-heading">
+            <div><strong>Daily automation</strong><span id="automation-description">Carmen refreshes automatically every day at 5:00 AM in your local timezone.</span></div>
+          </div>
+          <div class="automation-controls">
+            <label>Daily refresh
+              <select id="daily-refresh-select" name="daily_refresh" aria-describedby="automation-time-note">
+                <option value="04:00">4:00 AM</option>
+                <option value="05:00" selected>5:00 AM</option>
+                <option value="06:00">6:00 AM</option>
+                <option value="07:00">7:00 AM</option>
+                <option value="08:00">8:00 AM</option>
+                <option value="09:00">9:00 AM</option>
+                <option value="10:00">10:00 AM</option>
+              </select>
+              <span class="field-note" id="automation-time-note">Uses this computer's local timezone.</span>
+            </label>
+            <label>Reminder check
+              <select id="reminder-interval-select" name="reminder_minutes">
+                <option value="15">Every 15 minutes</option>
+                <option value="30" selected>Every 30 minutes</option>
+                <option value="60">Every hour</option>
+                <option value="120">Every 2 hours</option>
+                <option value="240">Every 4 hours</option>
+                <option value="1440">Once a day</option>
+              </select>
+              <span class="field-note">Only due reminders generate notifications.</span>
+            </label>
+          </div>
+          <div class="settings-actions">
+            <button class="button primary" id="save-automation-button" type="button">Save &amp; repair</button>
+            <button class="button secondary" id="install-schedule-button" type="button">Repair automation</button>
+            <button class="button secondary" id="notify-button" type="button">Check reminders now</button>
+          </div>
+        </section>
+
+        <details class="advanced-settings">
+          <summary>Advanced settings</summary>
+          <div class="advanced-settings-body">
+            <section class="settings-section">
+              <div class="settings-section-heading">
+                <div><strong>Model runtime</strong><span>Changes apply to the next chat response.</span></div>
+              </div>
+              <div class="form-grid">
+                <label>Provider
+                  <select name="provider">
+                    <option value="mlx">MLX (Apple Silicon)</option>
+                    <option value="ollama">Ollama</option>
+                    <option value="openai-compatible">OpenAI-compatible</option>
+                  </select>
+                </label>
+                <label>Model
+                  <input name="model" maxlength="512" required>
+                </label>
+              </div>
+              <label>Model base URL
+                <input name="base_url" maxlength="2048" placeholder="http://127.0.0.1:11434/v1">
+              </label>
+              <label>Optional action adapter
+                <input name="action_command" maxlength="4096" placeholder="/absolute/path/to/adapter">
+              </label>
+              <p class="dialog-note">MLX and local Ollama keep inference on this computer. If you configure a remote URL, that provider receives the prompt and selected task context. Tasks run only after explicit approval.</p>
+            </section>
+
+            <section class="settings-section">
+              <div class="settings-section-heading">
+                <div><strong>System checks</strong><span>Model runtime, notifications, scheduler, and source connector.</span></div>
+                <button class="button secondary" id="diagnostics-button" type="button">Run checks</button>
+              </div>
+              <div class="diagnostics-list" id="diagnostics-list"><span>Run checks to inspect this device.</span></div>
+            </section>
+
+            <section class="settings-section">
+              <div class="settings-section-heading">
+                <div><strong>Quality checks</strong><span>Evaluate task accuracy and response quality after changing the agent.</span></div>
+                <button class="button secondary" id="evaluate-button" type="button">Run quality checks</button>
+              </div>
+            </section>
+          </div>
+        </details>
+
+        <div class="operation-status hidden" id="operation-status" role="status"></div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status"></div>
+  </body>
+</html>

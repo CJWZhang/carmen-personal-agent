@@ -1,0 +1,10 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+watchPatterns = ["src/**", "migrations/**", "pyproject.toml", "Dockerfile"]
+
+[deploy]
+startCommand = "carmen-hosted enqueue-daily"
+preDeployCommand = "carmen-hosted migrate"
+cronSchedule = "0 * * * *"
+restartPolicyType = "NEVER"

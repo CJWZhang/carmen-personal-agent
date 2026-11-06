@@ -1,0 +1,86 @@
+display_information:
+  name: Carmen Assistant
+  description: Private drafts and daily commitment reminders in your own voice.
+features:
+  bot_user:
+    display_name: Carmen Assistant
+    always_online: false
+  slash_commands:
+    - command: /draft
+      url: https://YOUR_DOMAIN/slack/commands
+      description: Draft a private reply in your writing style
+      usage_hint: what you want to communicate
+      should_escape: false
+    - command: /catchup
+      url: https://YOUR_DOMAIN/slack/commands
+      description: Show open asks and commitments with evidence
+      should_escape: false
+    - command: /done
+      url: https://YOUR_DOMAIN/slack/commands
+      description: Mark an action complete
+      usage_hint: action-id
+      should_escape: false
+    - command: /snooze
+      url: https://YOUR_DOMAIN/slack/commands
+      description: Snooze an action
+      usage_hint: action-id minutes
+      should_escape: false
+    - command: /why
+      url: https://YOUR_DOMAIN/slack/commands
+      description: Explain why an action is tracked
+      usage_hint: action-id
+      should_escape: false
+    - command: /not-a-task
+      url: https://YOUR_DOMAIN/slack/commands
+      description: Dismiss a false-positive action
+      usage_hint: action-id
+      should_escape: false
+    - command: /not-mine
+      url: https://YOUR_DOMAIN/slack/commands
+      description: Dismiss an action assigned to someone else
+      usage_hint: action-id
+      should_escape: false
+    - command: /handled
+      url: https://YOUR_DOMAIN/slack/commands
+      description: Mark an action already handled
+      usage_hint: action-id
+      should_escape: false
+    - command: /wrong-priority
+      url: https://YOUR_DOMAIN/slack/commands
+      description: Record incorrect priority without dismissing
+      usage_hint: action-id
+      should_escape: false
+    - command: /draft-feedback
+      url: https://YOUR_DOMAIN/slack/commands
+      description: Rate a private draft suggestion
+      usage_hint: draft-id accepted|modified|rejected [edited text]
+      should_escape: false
+    - command: /confirm
+      url: https://YOUR_DOMAIN/slack/commands
+      description: Confirm a lower-confidence candidate as real work
+      usage_hint: action-id
+      should_escape: false
+oauth_config:
+  redirect_urls:
+    - https://YOUR_DOMAIN/slack/oauth/callback
+  scopes:
+    bot:
+      - commands
+      - chat:write
+      - im:write
+    user:
+      - channels:history
+      - groups:history
+      - im:history
+      - mpim:history
+settings:
+  event_subscriptions:
+    request_url: https://YOUR_DOMAIN/slack/events
+    user_events:
+      - message.channels
+      - message.groups
+      - message.im
+      - message.mpim
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false

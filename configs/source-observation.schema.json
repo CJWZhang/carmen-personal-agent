@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://carmen.local/schemas/source-observation.json",
+  "title": "Carmen sparse source observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id", "batch_id", "source", "native_id", "entity_id",
+    "event_type", "observed_at", "occurred_at", "source_updated_at",
+    "permalink", "cursor", "content", "attributes", "payload_hash"
+  ],
+  "properties": {
+    "event_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "batch_id": {"type": "string", "maxLength": 128},
+    "source": {"enum": ["slack", "gmail", "calendar", "github"]},
+    "native_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "entity_id": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "event_type": {"enum": ["observed", "resolved", "deleted", "checkpoint"]},
+    "observed_at": {"type": "string", "maxLength": 128},
+    "occurred_at": {"type": "string", "maxLength": 128},
+    "source_updated_at": {"type": "string", "maxLength": 128},
+    "permalink": {"type": "string", "maxLength": 4096},
+    "cursor": {"type": "string", "maxLength": 4096},
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sender": {"type": "string", "maxLength": 512},
+        "subject": {"type": "string", "maxLength": 2000},
+        "body": {"type": "string", "maxLength": 20000},
+        "channel": {"type": "string", "maxLength": 512},
+        "thread_id": {"type": "string", "maxLength": 512},
+        "kind": {"type": "string", "maxLength": 128},
+        "status": {"enum": ["open", "waiting", "done"]},
+        "participants": {"type": "array", "maxItems": 100, "items": {"type": "string", "maxLength": 256}},
+        "related_keys": {"type": "array", "maxItems": 50, "items": {"type": "string", "maxLength": 512}}
+      }
+    },
+    "attributes": {"type": "object"},
+    "payload_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"source": {"const": "slack"}}},
+      "then": {"properties": {"attributes": {"$ref": "#/$defs/messageAttributes"}}}
+    },
+    {
+      "if": {"properties": {"source": {"const": "gmail"}}},
+      "then": {"properties": {"attributes": {"$ref": "#/$defs/messageAttributes"}}}
+    },
+    {
+      "if": {"properties": {"source": {"const": "calendar"}}},
+      "then": {"properties": {"attributes": {"$ref": "#/$defs/calendarAttributes"}}}
+    },
+    {
+      "if": {"properties": {"source": {"const": "github"}}},
+      "then": {"properties": {"attributes": {"$ref": "#/$defs/githubAttributes"}}}
+    }
+  ],
+  "$defs": {
+    "commonProperties": {
+      "kind": {"type": "string"},
+      "reason": {"type": "string"},
+      "deadline_at": {"type": "string"},
+      "expires_at": {"type": "string"},
+      "latest_activity_at": {"type": "string"},
+      "next_action": {"type": "string"},
+      "resolution_evidence": {"type": "string"},
+      "conversation_id": {"type": "string"}
+    },
+    "messageAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"type": "string"}, "reason": {"type": "string"},
+        "deadline_at": {"type": "string"}, "expires_at": {"type": "string"},
+        "latest_activity_at": {"type": "string"}, "next_action": {"type": "string"},
+        "resolution_evidence": {"type": "string"}, "conversation_id": {"type": "string"},
+        "user_replied_after_ask": {"type": "boolean"}
+      }
+    },
+    "calendarAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"type": "string"}, "reason": {"type": "string"},
+        "deadline_at": {"type": "string"}, "expires_at": {"type": "string"},
+        "latest_activity_at": {"type": "string"}, "next_action": {"type": "string"},
+        "resolution_evidence": {"type": "string"}, "conversation_id": {"type": "string"},
+        "response_status": {"type": "string"}, "organizer": {"type": "string"},
+        "series_id": {"type": "string"}, "cancelled": {"type": "boolean"},
+        "needs_decision": {"type": "boolean"}, "optional": {"type": "boolean"},
+        "historical_instances": {"type": "integer", "minimum": 0},
+        "historical_accepted": {"type": "integer", "minimum": 0},
+        "historical_declined": {"type": "integer", "minimum": 0},
+        "historical_tentative": {"type": "integer", "minimum": 0},
+        "historical_no_response": {"type": "integer", "minimum": 0},
+        "historical_attended": {"type": "integer", "minimum": 0},
+        "historical_missed": {"type": "integer", "minimum": 0}
+      }
+    },
+    "githubAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"type": "string"}, "reason": {"type": "string"},
+        "deadline_at": {"type": "string"}, "expires_at": {"type": "string"},
+        "latest_activity_at": {"type": "string"}, "next_action": {"type": "string"},
+        "resolution_evidence": {"type": "string"}, "conversation_id": {"type": "string"},
+        "repository": {"type": "string"}, "repo": {"type": "string"},
+        "number": {"type": "string"}, "state": {"type": "string"},
+        "review_state": {"type": "string"}, "ci_state": {"type": "string"},
+        "mergeable_state": {"type": "string"}, "review_requested": {"type": "boolean"},
+        "assigned": {"type": "boolean"}, "is_draft": {"type": "boolean"},
+        "has_unresolved_threads": {"type": "boolean"}, "ci_passing": {"type": "boolean"},
+        "mergeable": {"type": "boolean"}
+      }
+    }
+  }
+}
